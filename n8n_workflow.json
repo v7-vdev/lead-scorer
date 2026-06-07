@@ -1,0 +1,183 @@
+{
+  "name": "Lead Scorer API Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-lead",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ],
+      "webhookId": "lead-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/score-lead",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json[\"name\"] }}"
+            },
+            {
+              "name": "company",
+              "value": "={{ $json[\"company\"] }}"
+            },
+            {
+              "name": "budget",
+              "value": "={{ $json[\"budget\"] }}"
+            },
+            {
+              "name": "requirements",
+              "value": "={{ $json[\"requirements\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[\"urgency\"] }}",
+              "value2": "high"
+            }
+          ]
+        }
+      },
+      "name": "IF Urgency High",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        550,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "operation": "append",
+        "sheetId": "YOUR_SPREADSHEET_ID",
+        "range": "Sheet1!A:E",
+        "options": {},
+        "valuesUi": {
+          "valuesValues": [
+            {
+              "column": "Name",
+              "value": "={{ $node[\"HTTP Request\"].json[\"name\"] }}"
+            },
+            {
+              "column": "Score",
+              "value": "={{ $json[\"lead_score\"] }}"
+            },
+            {
+              "column": "Summary",
+              "value": "={{ $json[\"summary\"] }}"
+            }
+          ]
+        }
+      },
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        800,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "1",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "sales@yourcompany.com",
+        "toEmail": "ae@yourcompany.com",
+        "subject": "🔥 High Priority Lead: {{ $node[\"HTTP Request\"].json[\"name\"] }}",
+        "text": "A high priority lead has been identified.\n\nScore: {{ $json[\"lead_score\"] }}\nSummary: {{ $json[\"summary\"] }}\nRecommended Action: {{ $json[\"recommended_action\"] }}",
+        "options": {}
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1050,
+        200
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "2",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "IF Urgency High",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Urgency High": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "1"
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Lead Capture | Premium Solution</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Scale Your Business</h1>
+            <p>Get in touch with our team to explore tailored solutions for your enterprise.</p>
+        </header>
+
+        <main class="card">
+            <form id="leadForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input type="email" id="email" name="email" placeholder="john@company.com" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company" placeholder="Acme Inc." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget">Budget ($)</label>
+                        <input type="number" id="budget" name="budget" placeholder="5000" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="requirements">Requirements</label>
+                    <textarea id="requirements" name="requirements" placeholder="Tell us about your project needs..." rows="4" required></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    <span class="btn-text">Send Message</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </form>
+
+            <div id="messageBox" class="message-box hidden"></div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 SaaS Solutions Inc. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
