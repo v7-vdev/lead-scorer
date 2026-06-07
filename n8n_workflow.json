@@ -5,6 +5,7 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "new-lead",
+        "responseMode": "responseNode",
         "options": {}
       },
       "name": "Webhook",
@@ -19,7 +20,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8000/score-lead",
+        "url": "https://lead-scorer-api-rmah.onrender.com/score-lead",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
@@ -129,6 +130,20 @@
           "name": "SMTP account"
         }
       }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"lead_score\": {{ $node[\"HTTP Request\"].json[\"lead_score\"] }},\n  \"urgency\": \"{{ $node[\"HTTP Request\"].json[\"urgency\"] }}\",\n  \"summary\": \"{{ $node[\"HTTP Request\"].json[\"summary\"] }}\",\n  \"recommended_action\": \"{{ $node[\"HTTP Request\"].json[\"recommended_action\"] }}\"\n}",
+        "options": {}
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1300,
+        300
+      ]
     }
   ],
   "connections": {
@@ -162,6 +177,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -170,6 +192,17 @@
         [
           {
             "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
