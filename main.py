@@ -6,10 +6,21 @@ from typing import Literal
 from groq import Groq
 from dotenv import load_dotenv
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Load environment variables from .env file
 load_dotenv()
 
 app = FastAPI(title="Lead Scorer API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Helper to get Groq client safely
 def get_client():
